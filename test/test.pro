@@ -35,7 +35,5 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
-LIBS += -L"C:\Users\Nick\test\zmq\lib" -lzmq
-INCLUDEPATH += "C:\Users\Nick\test\zmq\include"
-
-DISTFILES +=
+LIBS += -L $$PWD/zmq/lib -lzmq
+INCLUDEPATH += $$PWD/zmq/include
