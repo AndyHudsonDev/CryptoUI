@@ -122,6 +122,7 @@ void MainWindow::marketUpdate(std::string data) {
                 max_row = it->first;
             }
         }
+        high = max_price;
         UpdateHighLowWindow(0, max_row);
     } else if (row == low_row) {
         int min_row = -1;
@@ -132,17 +133,19 @@ void MainWindow::marketUpdate(std::string data) {
                 min_row = it->first;
             }
         }
+        low = min_price;
         UpdateHighLowWindow(1, min_row);
     } else {
         if (price > high) {
-            UpdateHighLowWindow(0, row);
+
             high = price;
             high_row = row;
+            UpdateHighLowWindow(0, row);
         }
         if (price < low) {
-            UpdateHighLowWindow(1, row);
             low = price;
             low_row = row;
+            UpdateHighLowWindow(1, row);
         }
     }
 
