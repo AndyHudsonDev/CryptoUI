@@ -6,7 +6,7 @@ stream::stream(QObject *parent) : QObject(parent)
 {
     std::vector<std::string> connect_address_v;
     connect_address_v.push_back("tcp://54.67.2.43:40021");
-    // connect_address_v.push_back("tcp://52.193.146.32:40021");
+    connect_address_v.push_back("tcp://52.193.146.32:40021");
     zmq::context_t* context = new zmq::context_t(1);
     socket = new zmq::socket_t(*context, ZMQ_SUB);
     socket->setsockopt(ZMQ_SUBSCRIBE, "", 0);

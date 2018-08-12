@@ -26,31 +26,36 @@ MainWindow::MainWindow(QWidget *parent) :
     high_row(-1),
     low_row(-1)
 {
+    // dg = new Dialog();
+    // QWidget * qw = new QWidget();
     black_list.append("OKCOIN China");
     black_list.append("OKCOIN International");
     ui->setupUi(this);
     openMarket();
     openHighLow();
+    // QObject::connect(this, SIGNAL(ConnectClicked()), dg, SLOT(ShowFontPage()));
 }
 
 void MainWindow::openMarket() {
        QStandardItemModel *model = new QStandardItemModel();
-       model->setColumnCount(5);
+       model->setColumnCount(6);
 
        model->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("Exchange"));
        model->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("Product"));
        model->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("LastPrice"));
        model->setHeaderData(3,Qt::Horizontal,QString::fromLocal8Bit("Time"));
        model->setHeaderData(4,Qt::Horizontal,QString::fromLocal8Bit("nsec"));
+       model->setHeaderData(5,Qt::Horizontal,QString::fromLocal8Bit("source"));
        ui->tv->setModel(model);
        // ui->tv->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
        // ui->tv->horizontalHeader()->setResizeMode(0,QHeaderView::Fixed);
        // ui->tv->horizontalHeader()->setResizeMode(1,QHeaderView::Fixed);
-       ui->tv->setColumnWidth(0, 100);
-       ui->tv->setColumnWidth(1, 100);
+       ui->tv->setColumnWidth(0, 70);
+       ui->tv->setColumnWidth(1, 70);
        ui->tv->setColumnWidth(2, 100);
-       ui->tv->setColumnWidth(3, 100);
+       ui->tv->setColumnWidth(3, 70);
        ui->tv->setColumnWidth(4, 50);
+       ui->tv->setColumnWidth(5, 50);
 }
 
 void MainWindow::openHighLow() {
@@ -99,6 +104,9 @@ void MainWindow::marketUpdate(std::string data) {
         return;
     }
 
+    if (price < 0.001) {
+        return;
+    }
     if (exchange_map.find(exchange) == exchange_map.end()) {
         exchange_map[exchange] = ++ex_count;
     }
@@ -196,6 +204,7 @@ void MainWindow::UpdateDeltaWindow() {
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete dg;
 }
 
 void MainWindow::UpdateHigh(std::vector<std::string> v) {
@@ -251,6 +260,10 @@ void MainWindow::on_connect_clicked()
     */
     // this->ui->tv->show();
 
+    // emit ConnectClicked();
+    // dg->show();
+   ConnectPage* p = new ConnectPage();
+   p->show();
 }
 
 

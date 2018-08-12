@@ -18,6 +18,9 @@
 #include <zmq.hpp>
 #include <tr1/unordered_map>
 
+#include "dialog.h"
+#include "connectpage.h"
+
 
 class MdiChild;
 class QAction;
@@ -46,6 +49,7 @@ public:
 
 signals:
     void StartClicked();
+    void ConnectClicked();
 
 public slots:
     void marketUpdate(std::string data);
@@ -83,6 +87,7 @@ private:
     std::tr1::unordered_map<int, double> price_map;
     std::tr1::unordered_map<int, std::vector<std::string>> content_map;
     QList<std::string> black_list;
+    Dialog* dg;
 };
 
 #endif // MAINWINDOW_H

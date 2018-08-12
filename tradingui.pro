@@ -26,11 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    stream.cpp
+    stream.cpp \
+    dialog.cpp \
+    connectpage.cpp
 
 HEADERS += \
         mainwindow.h \
-    stream.h
+    stream.h \
+    dialog.h \
+    connectpage.h
 
 FORMS += \
         mainwindow.ui
