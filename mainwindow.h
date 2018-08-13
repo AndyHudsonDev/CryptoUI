@@ -78,6 +78,8 @@ private slots:
 
     void on_clear_clicked();
 
+    void on_comboBox_currentIndexChanged(const QString &arg1);
+
 private:
     void SetModel(QTableView*v, QStandardItemModel*m);
     void InitVariable();
@@ -90,8 +92,8 @@ private:
     Ui::MainWindow *ui;
     zmq::socket_t* socket;
     QMdiArea *mdiArea;
-    std::tr1::unordered_map<std::string, std::tr1::unordered_map<std::string, int>> exchange_map;
-    std::tr1::unordered_map<std::string, int> ex_count;
+    std::tr1::unordered_map<int, std::tr1::unordered_map<std::string, int>> exchange_map;
+    std::tr1::unordered_map<int, int> ex_count;
     std::tr1::unordered_map<std::string, int> row;
     std::tr1::unordered_map<std::string, double> high;
     std::tr1::unordered_map<std::string, double> low;
@@ -109,6 +111,7 @@ private:
     bool socket_recv_started;
     std::tr1::unordered_map<std::string, int> p_d;
     std::tr1::unordered_map<std::string, QStandardItemModel*> model_map;
+    std::tr1::unordered_map<int, int> pre_row;
     int model_num;
     int showmodel_no;
 };

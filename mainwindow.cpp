@@ -17,22 +17,23 @@ MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, 
     socket_recv_started(false),
     p_d(pd),
     model_num(0),
-    showmodel_no(0)
+    showmodel_no(1)
 {
     InitVariable();
     ui->setupUi(this);
     // openMarket();
     ui->tv->setModel(market_model[showmodel_no]);
-    // QMessageBox::information(this, "MarketData", "here is good!");
     openHighLow();
 }
 
 void MainWindow::InitVariable() {
+    /*
     for (int i = 0; i < model_num; i++) {
         if (market_model[i] != NULL) {
             delete market_model[i];
         }
     }
+    */
     // delete highlow_model;
     /*
     if (highlow_model != NULL) {
@@ -52,21 +53,19 @@ void MainWindow::InitVariable() {
         }
     }
     model_num++;
-    char model_char[32];
-    snprintf(model_char, sizeof(model_char), "%d", model_num);
-    QMessageBox::information(this, "NULL", model_char);
     for (int i = 0; i < model_num; i++) {
         market_model[i] = InitMarketModel(market_model[i]);
     }
 
     for (std::tr1::unordered_map<std::string, int>::iterator it = p_d.begin(); it != p_d.end(); it++) {
         model_map[it->first] = market_model[it->second];
-        ex_count[it->first] = -1;
+        ex_count[it->second] = -1;
         row[it->first] = -1;
         high[it->first] = -1;
         low[it->first] = 100000000;
         high_row[it->first] = -1;
         low_row[it->first] = -1;
+        pre_row[it->second] = -1;
     }
     black_list.append("OKCOIN China");
     black_list.append("OKCOIN International");
@@ -141,7 +140,7 @@ void MainWindow::openHighLow() {
 }
 
 void MainWindow::marketUpdate(std::string data) {
-    QMessageBox::information(this, "Recv data", data.c_str());
+    // QMessageBox::information(this, "MarketData", data.c_str());
     std::vector<std::string> v = Split(data, '|');
     v.erase(v.end());
     std::string exchange = v[0];
@@ -157,10 +156,11 @@ void MainWindow::marketUpdate(std::string data) {
         QMessageBox::information(this, "NULL", product.c_str());
     }
     QStandardItemModel *m = model_map[product];// reinterpret_cast<QStandardItemModel*>(ui->tv->model());
+    // ui->tv->setModel(m);
 
-    if (row[product] >= 0) {
-       for (int i = 0; i < ui->tv->model()->columnCount(); i++) {
-          m->item(row[product], i)->setForeground(QBrush(QColor(0, 0, 0)));
+    if (pre_row[model_no] >= 0) {
+       for (int i = 0; i < m->columnCount(); i++) {
+          m->item(pre_row[model_no], i)->setForeground(QBrush(QColor(0, 0, 0)));
        }
     }
 
@@ -172,21 +172,22 @@ void MainWindow::marketUpdate(std::string data) {
         return;
     }
 
-    if (exchange_map[product].find(exchange) == exchange_map[product].end()) {
-        exchange_map[product][exchange] = ex_count[product] + 1;
-        ex_count[product]++;
+    if (exchange_map[model_no].find(exchange) == exchange_map[model_no].end()) {
+        exchange_map[model_no][exchange] = ex_count[model_no]+1;
+        ex_count[model_no] = ex_count[model_no] + 1;
     }
-    row[product] = exchange_map[exchange][product];
+    row[product] = exchange_map[model_no][exchange];
 
     price_map[product][row[product]] = price;
     content_map[product][row[product]] = v;
 
-    for (int i = 0; i < ui->tv->model()->columnCount(); i++) {
+    for (int i = 0; i < m->columnCount(); i++) {
         m->setItem(row[product],i,new QStandardItem(QString::fromLocal8Bit(v[i].c_str())));
         m->item(row[product],i)->setForeground(QBrush(QColor(255, 0, 0)));
     }
+    pre_row[model_no] = row[product];
 
-    QMessageBox::information(this, "NULL", "here good");
+    // QMessageBox::information(this, "NULL", "here good");
 
     if (row[product] == high_row[product]) {
         int max_row = -1;
@@ -392,4 +393,15 @@ void MainWindow::on_clear_clicked()
     */
     InitVariable();
     openHighLow();
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
+{
+    std::string s = arg1.toStdString();
+    if (s == "BTCUSD") {
+        ui->tv->setModel(market_model[0]);
+    }
+    if (s == "ETHUSD") {
+        ui->tv->setModel(market_model[1]);
+    }
 }
