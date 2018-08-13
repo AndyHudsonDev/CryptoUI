@@ -18,7 +18,7 @@ stream::~stream() {
 
 void stream::Start() {
     QObject::connect(t, SIGNAL(timeout()), this, SLOT(StartRecv()));
-    t->start(200);
+    t->start(20);
     emit SocketRecvStarted();
 }
 

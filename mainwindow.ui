@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>946</width>
-    <height>631</height>
+    <width>1094</width>
+    <height>633</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,7 +45,7 @@
      <rect>
       <x>0</x>
       <y>80</y>
-      <width>531</width>
+      <width>611</width>
       <height>481</height>
      </rect>
     </property>
@@ -66,8 +66,8 @@
    <widget class="QTableView" name="tv2">
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>81</y>
+      <x>680</x>
+      <y>80</y>
       <width>401</width>
       <height>481</height>
      </rect>
@@ -99,13 +99,46 @@
      <string>disconnect</string>
     </property>
    </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>740</x>
+      <y>10</y>
+      <width>69</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>BTCUSD</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>ETHUSD</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>10</y>
+      <width>47</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Procucts</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>946</width>
+     <width>1094</width>
      <height>21</height>
     </rect>
    </property>

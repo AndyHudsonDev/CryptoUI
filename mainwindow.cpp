@@ -4,44 +4,114 @@
 #include <QTimer>
 
 
-MainWindow::MainWindow(ConnectWindow* win) :
+MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, int> pd) :
     ui(new Ui::MainWindow),
     cw(win),
-    ex_count(-1),
-    row(-1),
-    high(-1),
-    low(10000000),
-    high_row(-1),
-    low_row(-1),
+    // ex_count(-1),
+    // row(-1),
+    // high(-1),
+    // low(10000000),
+    // high_row(-1),
+    // low_row(-1),
     socket_connected(false),
-    socket_recv_started(false)
+    socket_recv_started(false),
+    p_d(pd),
+    model_num(0),
+    showmodel_no(0)
 {
-    black_list.append("OKCOIN China");
-    black_list.append("OKCOIN International");
+    InitVariable();
     ui->setupUi(this);
-    openMarket();
+    // openMarket();
+    ui->tv->setModel(market_model[showmodel_no]);
+    // QMessageBox::information(this, "MarketData", "here is good!");
     openHighLow();
 }
 
+void MainWindow::InitVariable() {
+    for (int i = 0; i < model_num; i++) {
+        if (market_model[i] != NULL) {
+            delete market_model[i];
+        }
+    }
+    // delete highlow_model;
+    /*
+    if (highlow_model != NULL) {
+        delete highlow_model;
+    }
+    */
+    model_map.clear();
+    ex_count.clear();
+    row.clear();
+    high.clear();
+    low.clear();
+    high_row.clear();
+    low_row.clear();
+    for (std::tr1::unordered_map<std::string, int>::iterator it = p_d.begin(); it != p_d.end(); it++) {
+        if (it->second > model_num) {
+            model_num = it->second;
+        }
+    }
+    model_num++;
+    char model_char[32];
+    snprintf(model_char, sizeof(model_char), "%d", model_num);
+    QMessageBox::information(this, "NULL", model_char);
+    for (int i = 0; i < model_num; i++) {
+        market_model[i] = InitMarketModel(market_model[i]);
+    }
+
+    for (std::tr1::unordered_map<std::string, int>::iterator it = p_d.begin(); it != p_d.end(); it++) {
+        model_map[it->first] = market_model[it->second];
+        ex_count[it->first] = -1;
+        row[it->first] = -1;
+        high[it->first] = -1;
+        low[it->first] = 100000000;
+        high_row[it->first] = -1;
+        low_row[it->first] = -1;
+    }
+    black_list.append("OKCOIN China");
+    black_list.append("OKCOIN International");
+}
+
 void MainWindow::openMarket() {
-       market_model = new QStandardItemModel();
-       market_model->setColumnCount(6);
-       market_model->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("Exchange"));
-       market_model->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("Product"));
-       market_model->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("LastPrice"));
-       market_model->setHeaderData(3,Qt::Horizontal,QString::fromLocal8Bit("Time"));
-       market_model->setHeaderData(4,Qt::Horizontal,QString::fromLocal8Bit("nsec"));
-       market_model->setHeaderData(5,Qt::Horizontal,QString::fromLocal8Bit("source"));
-       ui->tv->setModel(market_model);
-       // ui->tv->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-       // ui->tv->horizontalHeader()->setResizeMode(0,QHeaderView::Fixed);
-       // ui->tv->horizontalHeader()->setResizeMode(1,QHeaderView::Fixed);
+    for (int i = 0 ; i < model_num; i++) {
+       market_model[i] = new QStandardItemModel();
+       market_model[i]->setColumnCount(6);
+       market_model[i]->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("Exchange"));
+       market_model[i]->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("Product"));
+       market_model[i]->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("LastPrice"));
+       market_model[i]->setHeaderData(3,Qt::Horizontal,QString::fromLocal8Bit("Time"));
+       market_model[i]->setHeaderData(4,Qt::Horizontal,QString::fromLocal8Bit("nsec"));
+       market_model[i]->setHeaderData(5,Qt::Horizontal,QString::fromLocal8Bit("source"));
+
+       ui->tv->setModel(market_model[i]);
+
        ui->tv->setColumnWidth(0, 70);
        ui->tv->setColumnWidth(1, 70);
        ui->tv->setColumnWidth(2, 100);
        ui->tv->setColumnWidth(3, 70);
        ui->tv->setColumnWidth(4, 50);
        ui->tv->setColumnWidth(5, 50);
+    }
+}
+
+QStandardItemModel* MainWindow::InitMarketModel(QStandardItemModel* m) {
+       m = new QStandardItemModel();
+       m->setColumnCount(6);
+       m->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("Exchange"));
+       m->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("Product"));
+       m->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("LastPrice"));
+       m->setHeaderData(3,Qt::Horizontal,QString::fromLocal8Bit("Time"));
+       m->setHeaderData(4,Qt::Horizontal,QString::fromLocal8Bit("nsec"));
+       m->setHeaderData(5,Qt::Horizontal,QString::fromLocal8Bit("source"));
+       return m;
+}
+
+void MainWindow::SetModel(QTableView*v, QStandardItemModel* m) {
+    v->setModel(m);
+    v->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    v->setColumnWidth(0, 100);
+    v->setColumnWidth(1, 100);
+    v->setColumnWidth(2, 100);
 }
 
 void MainWindow::openHighLow() {
@@ -56,7 +126,7 @@ void MainWindow::openHighLow() {
     l.append("Delta");
     highlow_model->setVerticalHeaderLabels(l);
     ui->tv2->setModel(highlow_model);
-    ui->tv->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    ui->tv2->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     ui->tv2->setColumnWidth(0, 100);
     ui->tv2->setColumnWidth(1, 100);
     ui->tv2->setColumnWidth(2, 100);
@@ -71,21 +141,29 @@ void MainWindow::openHighLow() {
 }
 
 void MainWindow::marketUpdate(std::string data) {
-    QStandardItemModel *m = reinterpret_cast<QStandardItemModel*>(ui->tv->model());
-    if (row >= 0) {
-       for (int i = 0; i < ui->tv->model()->columnCount(); i++) {
-          m->item(row, i)->setForeground(QBrush(QColor(0, 0, 0)));
-       }
-    }
-
+    QMessageBox::information(this, "Recv data", data.c_str());
     std::vector<std::string> v = Split(data, '|');
     v.erase(v.end());
     std::string exchange = v[0];
     std::string product = v[1];
+    int model_no = p_d[product];
     std::string last_price = v[2];
     double price = atof(v[2].c_str());
     std::string second = v[3];
     std::string nsec = v[4];
+    std::string source = v[5];
+
+    if (model_map.find(product) == model_map.end()) {
+        QMessageBox::information(this, "NULL", product.c_str());
+    }
+    QStandardItemModel *m = model_map[product];// reinterpret_cast<QStandardItemModel*>(ui->tv->model());
+
+    if (row[product] >= 0) {
+       for (int i = 0; i < ui->tv->model()->columnCount(); i++) {
+          m->item(row[product], i)->setForeground(QBrush(QColor(0, 0, 0)));
+       }
+    }
+
     if (black_list.contains(exchange)) {
         return;
     }
@@ -93,62 +171,63 @@ void MainWindow::marketUpdate(std::string data) {
     if (price < 0.001) {
         return;
     }
-    if (exchange_map.find(exchange) == exchange_map.end()) {
-        exchange_map[exchange] = ++ex_count;
-    }
-    row = exchange_map[exchange];
 
-    price_map[row] = price;
-    content_map[row] = v;
+    if (exchange_map[product].find(exchange) == exchange_map[product].end()) {
+        exchange_map[product][exchange] = ex_count[product] + 1;
+        ex_count[product]++;
+    }
+    row[product] = exchange_map[exchange][product];
+
+    price_map[product][row[product]] = price;
+    content_map[product][row[product]] = v;
 
     for (int i = 0; i < ui->tv->model()->columnCount(); i++) {
-        m->setItem(row,i,new QStandardItem(QString::fromLocal8Bit(v[i].c_str())));
-        m->item(row,i)->setForeground(QBrush(QColor(255, 0, 0)));
+        m->setItem(row[product],i,new QStandardItem(QString::fromLocal8Bit(v[i].c_str())));
+        m->item(row[product],i)->setForeground(QBrush(QColor(255, 0, 0)));
     }
 
+    QMessageBox::information(this, "NULL", "here good");
 
-    if (row == high_row) {
+    if (row[product] == high_row[product]) {
         int max_row = -1;
         double max_price = -1.0;
-        for (std::tr1::unordered_map<int, double>::iterator it = price_map.begin(); it != price_map.end(); it++) {
+        for (std::tr1::unordered_map<int, double>::iterator it = price_map[product].begin(); it != price_map[product].end(); it++) {
             if (it->second > max_price) {
                 max_price = it->second;
                 max_row = it->first;
             }
         }
-        high = max_price;
-        UpdateHighLowWindow(0, max_row);
-    } else if (row == low_row) {
+        high[product] = max_price;
+        // UpdateHighLowWindow(0, max_row);
+    } else if (row[product] == low_row[product]) {
         int min_row = -1;
         double min_price = 1000000;
-        for (std::tr1::unordered_map<int, double>::iterator it = price_map.begin(); it != price_map.end(); it++) {
+        for (std::tr1::unordered_map<int, double>::iterator it = price_map[product].begin(); it != price_map[product].end(); it++) {
             if (it->second < min_price) {
                 min_price = it->second;
                 min_row = it->first;
             }
         }
-        low = min_price;
-        UpdateHighLowWindow(1, min_row);
+        low[product] = min_price;
+        // UpdateHighLowWindow(1, min_row);
     } else {
-        if (price > high) {
-
-            high = price;
-            high_row = row;
-            UpdateHighLowWindow(0, row);
+        if (price > high[product]) {
+            high[product] = price;
+            high_row[product] = row[product];
+            // UpdateHighLowWindow(0, row[product]);
         }
-        if (price < low) {
-            low = price;
-            low_row = row;
-            UpdateHighLowWindow(1, row);
+        if (price < low[product]) {
+            low[product] = price;
+            low_row[product] = row[product];
+            //UpdateHighLowWindow(1, row[product]);
         }
     }
-
 
 }
 
 
 void MainWindow::UpdateHighLowWindow(int line, int r) {
-    std::vector<std::string> temp_v = content_map[r];
+    std::vector<std::string> temp_v = content_map["BTC-USD"][r];
     std::string exchange = temp_v[0];
     std::string product = temp_v[1];
     std::string last_price = temp_v[2];
@@ -163,6 +242,7 @@ void MainWindow::UpdateHighLowWindow(int line, int r) {
 }
 
 void MainWindow::UpdateDeltaWindow() {
+    /*
     QStandardItemModel* m = reinterpret_cast<QStandardItemModel*>(ui->tv2->model());
     if (high < 0 || low > 9999999) {
         m->setItem(2,0,new QStandardItem(QString::fromLocal8Bit("NULL")));
@@ -184,13 +264,16 @@ void MainWindow::UpdateDeltaWindow() {
     m->setItem(2,0,new QStandardItem(QString::fromLocal8Bit("NULL")));
     m->setItem(2,1,new QStandardItem(QString::fromLocal8Bit(delta_price_str)));
     m->setItem(2,2,new QStandardItem(QString::fromLocal8Bit(delta_time_str)));
+    */
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete highlow_model;
-    delete market_model;
+    for (int i = 0; i < model_num; i++) {
+        delete market_model[i];
+    }
 }
 
 void MainWindow::UpdateHigh(std::vector<std::string> v) {
@@ -218,6 +301,7 @@ void MainWindow::UpdateLow(std::vector<std::string> v) {
 }
 
 void MainWindow::UpdateDelta() {
+    /*
     QStandardItemModel* m = reinterpret_cast<QStandardItemModel*>(ui->tv2->model());
     double high_price = atof(m->item(0, 1)->accessibleText().toStdString().c_str());
     double low_price = atof(m->item(1,1)->accessibleText().toStdString().c_str());
@@ -232,6 +316,7 @@ void MainWindow::UpdateDelta() {
     m->setItem(2,0,new QStandardItem(QString::fromLocal8Bit("NULL")));
     m->setItem(2,1,new QStandardItem(QString::fromLocal8Bit(price_delta_str)));
     m->setItem(2,2,new QStandardItem(QString::fromLocal8Bit(time_delta_str)));
+    */
 }
 
 void MainWindow::on_connect_clicked()
@@ -291,8 +376,8 @@ void MainWindow::on_clear_clicked()
         QMessageBox::information(this, "ERROR", "Disconnect First!");
         return;
     }
-    delete market_model;
-    delete highlow_model;
+
+    /*
     ex_count = -1;
     row = -1;
     high = -1;
@@ -304,5 +389,7 @@ void MainWindow::on_clear_clicked()
     price_map.clear();
     content_map.clear();
     openMarket();
+    */
+    InitVariable();
     openHighLow();
 }

@@ -44,7 +44,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(ConnectWindow *win);
+    MainWindow(ConnectWindow *win, std::tr1::unordered_map<std::string, int>pd);
     ~MainWindow();
 
 signals:
@@ -79,31 +79,38 @@ private slots:
     void on_clear_clicked();
 
 private:
+    void SetModel(QTableView*v, QStandardItemModel*m);
+    void InitVariable();
     void UpdateHigh(std::vector<std::string> v);
     void UpdateLow(std::vector<std::string> v);
     void UpdateDelta();
     void UpdateHighLowWindow(int line, int r);
     void UpdateDeltaWindow();
+    QStandardItemModel* InitMarketModel(QStandardItemModel* m);
     Ui::MainWindow *ui;
     zmq::socket_t* socket;
     QMdiArea *mdiArea;
-    std::tr1::unordered_map<std::string, int> exchange_map;
-    int ex_count;
-    int row;
-    double high;
-    double low;
-    int high_row;
-    int low_row;
+    std::tr1::unordered_map<std::string, std::tr1::unordered_map<std::string, int>> exchange_map;
+    std::tr1::unordered_map<std::string, int> ex_count;
+    std::tr1::unordered_map<std::string, int> row;
+    std::tr1::unordered_map<std::string, double> high;
+    std::tr1::unordered_map<std::string, double> low;
+    std::tr1::unordered_map<std::string, int> high_row;
+    std::tr1::unordered_map<std::string, int> low_row;
     QMdiSubWindow* MarketWindow;
     QMdiSubWindow* HighLowWindow;
-    QStandardItemModel* market_model;
+    QStandardItemModel* market_model[32];
     QStandardItemModel* highlow_model;
-    std::tr1::unordered_map<int, double> price_map;
-    std::tr1::unordered_map<int, std::vector<std::string>> content_map;
+    std::tr1::unordered_map<std::string, std::tr1::unordered_map<int, double>> price_map;
+    std::tr1::unordered_map<std::string, std::tr1::unordered_map<int, std::vector<std::string>>> content_map;
     QList<std::string> black_list;
     ConnectWindow* cw;
     bool socket_connected;
     bool socket_recv_started;
+    std::tr1::unordered_map<std::string, int> p_d;
+    std::tr1::unordered_map<std::string, QStandardItemModel*> model_map;
+    int model_num;
+    int showmodel_no;
 };
 
 #endif // MAINWINDOW_H
