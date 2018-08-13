@@ -21,6 +21,7 @@
 #include "connectwindow.h"
 #include "common_util.h"
 
+#define NUM_MODEL 32
 
 class MdiChild;
 class QAction;
@@ -101,7 +102,7 @@ private:
     std::tr1::unordered_map<std::string, int> low_row;
     QMdiSubWindow* MarketWindow;
     QMdiSubWindow* HighLowWindow;
-    QStandardItemModel* market_model[32];
+    QStandardItemModel* market_model[NUM_MODEL];
     QStandardItemModel* highlow_model;
     std::tr1::unordered_map<std::string, std::tr1::unordered_map<int, double>> price_map;
     std::tr1::unordered_map<std::string, std::tr1::unordered_map<int, std::vector<std::string>>> content_map;

@@ -17,30 +17,32 @@ MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, 
     socket_recv_started(false),
     p_d(pd),
     model_num(0),
-    showmodel_no(1)
+    showmodel_no(0)
 {
     InitVariable();
     ui->setupUi(this);
-    // openMarket();
+
     ui->tv->setModel(market_model[showmodel_no]);
     openHighLow();
 }
 
 void MainWindow::InitVariable() {
     /*
-    for (int i = 0; i < model_num; i++) {
-        if (market_model[i] != NULL) {
-            delete market_model[i];
-        }
+    if (ui->tv->isEnabled()) {
+        QMessageBox::information(this, "MarketData", "Enable");
     }
     */
-    // delete highlow_model;
     /*
-    if (highlow_model != NULL) {
-        delete highlow_model;
+    for(int i = 0; i < NUM_MODEL; i++) {
+        market_model[i] = NULL;
     }
+    highlow_model = NULL;
     */
+    pre_row.clear();
+    exchange_map.clear();
     model_map.clear();
+    content_map.clear();
+    price_map.clear();
     ex_count.clear();
     row.clear();
     high.clear();
@@ -69,6 +71,7 @@ void MainWindow::InitVariable() {
     }
     black_list.append("OKCOIN China");
     black_list.append("OKCOIN International");
+
 }
 
 void MainWindow::openMarket() {
@@ -154,6 +157,7 @@ void MainWindow::marketUpdate(std::string data) {
 
     if (model_map.find(product) == model_map.end()) {
         QMessageBox::information(this, "NULL", product.c_str());
+        return;
     }
     QStandardItemModel *m = model_map[product];// reinterpret_cast<QStandardItemModel*>(ui->tv->model());
     // ui->tv->setModel(m);
@@ -373,6 +377,7 @@ void MainWindow::on_disconnect_clicked()
 
 void MainWindow::on_clear_clicked()
 {
+    // ui->tv->model();
     if (socket_recv_started) {
         QMessageBox::information(this, "ERROR", "Disconnect First!");
         return;
@@ -392,7 +397,8 @@ void MainWindow::on_clear_clicked()
     openMarket();
     */
     InitVariable();
-    openHighLow();
+    ui->tv->setModel(market_model[showmodel_no]);
+    // openHighLow();
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
