@@ -3,50 +3,36 @@
 #include <unistd.h>
 #include <QTimer>
 
-std::vector<std::string> Split(std::string raw_string, char split_char) {
-    std::vector<std::string> result;
-    int pos = -1;
-    for (unsigned int i = 0; i < raw_string.size(); i++) {
-      if (raw_string[i] == split_char) {
-        result.push_back(raw_string.substr(pos+1, i-pos-1));
-        pos = i;
-      }
-    }
-    result.push_back(raw_string.substr(pos+1, raw_string.size()-pos));
-    return result;
-}
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+MainWindow::MainWindow(ConnectWindow* win) :
     ui(new Ui::MainWindow),
+    cw(win),
     ex_count(-1),
     row(-1),
     high(-1),
     low(10000000),
     high_row(-1),
-    low_row(-1)
+    low_row(-1),
+    socket_connected(false),
+    socket_recv_started(false)
 {
-    // dg = new Dialog();
-    // QWidget * qw = new QWidget();
     black_list.append("OKCOIN China");
     black_list.append("OKCOIN International");
     ui->setupUi(this);
     openMarket();
     openHighLow();
-    // QObject::connect(this, SIGNAL(ConnectClicked()), dg, SLOT(ShowFontPage()));
 }
 
 void MainWindow::openMarket() {
-       QStandardItemModel *model = new QStandardItemModel();
-       model->setColumnCount(6);
-
-       model->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("Exchange"));
-       model->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("Product"));
-       model->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("LastPrice"));
-       model->setHeaderData(3,Qt::Horizontal,QString::fromLocal8Bit("Time"));
-       model->setHeaderData(4,Qt::Horizontal,QString::fromLocal8Bit("nsec"));
-       model->setHeaderData(5,Qt::Horizontal,QString::fromLocal8Bit("source"));
-       ui->tv->setModel(model);
+       market_model = new QStandardItemModel();
+       market_model->setColumnCount(6);
+       market_model->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("Exchange"));
+       market_model->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("Product"));
+       market_model->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("LastPrice"));
+       market_model->setHeaderData(3,Qt::Horizontal,QString::fromLocal8Bit("Time"));
+       market_model->setHeaderData(4,Qt::Horizontal,QString::fromLocal8Bit("nsec"));
+       market_model->setHeaderData(5,Qt::Horizontal,QString::fromLocal8Bit("source"));
+       ui->tv->setModel(market_model);
        // ui->tv->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
        // ui->tv->horizontalHeader()->setResizeMode(0,QHeaderView::Fixed);
        // ui->tv->horizontalHeader()->setResizeMode(1,QHeaderView::Fixed);
@@ -59,29 +45,29 @@ void MainWindow::openMarket() {
 }
 
 void MainWindow::openHighLow() {
-    QStandardItemModel *model = new QStandardItemModel();
-    model->setColumnCount(3);
-    model->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("exchange"));
-    model->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("LastPrice"));
-    model->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("time"));
+    highlow_model = new QStandardItemModel();
+    highlow_model->setColumnCount(3);
+    highlow_model->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("exchange"));
+    highlow_model->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("LastPrice"));
+    highlow_model->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("time"));
     QStringList l;
     l.append("High");
     l.append("Low");
     l.append("Delta");
-    model->setVerticalHeaderLabels(l);
-    ui->tv2->setModel(model);
+    highlow_model->setVerticalHeaderLabels(l);
+    ui->tv2->setModel(highlow_model);
     ui->tv->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     ui->tv2->setColumnWidth(0, 100);
     ui->tv2->setColumnWidth(1, 100);
     ui->tv2->setColumnWidth(2, 100);
 
-    model->setItem(0,0,new QStandardItem(QString::fromLocal8Bit("Not init")));
-    model->setItem(0,1,new QStandardItem(QString::fromLocal8Bit("0")));
-    model->setItem(0,2,new QStandardItem(QString::fromLocal8Bit("0")));
+    highlow_model->setItem(0,0,new QStandardItem(QString::fromLocal8Bit("Not init")));
+    highlow_model->setItem(0,1,new QStandardItem(QString::fromLocal8Bit("0")));
+    highlow_model->setItem(0,2,new QStandardItem(QString::fromLocal8Bit("0")));
 
-    model->setItem(1,0,new QStandardItem(QString::fromLocal8Bit("Not init")));
-    model->setItem(1,1,new QStandardItem(QString::fromLocal8Bit("0")));
-    model->setItem(1,2,new QStandardItem(QString::fromLocal8Bit("0")));
+    highlow_model->setItem(1,0,new QStandardItem(QString::fromLocal8Bit("Not init")));
+    highlow_model->setItem(1,1,new QStandardItem(QString::fromLocal8Bit("0")));
+    highlow_model->setItem(1,2,new QStandardItem(QString::fromLocal8Bit("0")));
 }
 
 void MainWindow::marketUpdate(std::string data) {
@@ -179,7 +165,6 @@ void MainWindow::UpdateHighLowWindow(int line, int r) {
 void MainWindow::UpdateDeltaWindow() {
     QStandardItemModel* m = reinterpret_cast<QStandardItemModel*>(ui->tv2->model());
     if (high < 0 || low > 9999999) {
-        // QMessageBox::information(this, "MarketData", "ok for line 170");
         m->setItem(2,0,new QStandardItem(QString::fromLocal8Bit("NULL")));
         m->setItem(2,1,new QStandardItem(QString::fromLocal8Bit("NULL")));
         m->setItem(2,2,new QStandardItem(QString::fromLocal8Bit("NULL")));
@@ -204,7 +189,8 @@ void MainWindow::UpdateDeltaWindow() {
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete dg;
+    delete highlow_model;
+    delete market_model;
 }
 
 void MainWindow::UpdateHigh(std::vector<std::string> v) {
@@ -250,42 +236,73 @@ void MainWindow::UpdateDelta() {
 
 void MainWindow::on_connect_clicked()
 {
-    /*
-    zmq::context_t* context = new zmq::context_t(1);
-    socket = new zmq::socket_t(*context, ZMQ_SUB);
-    socket->setsockopt(ZMQ_SUBSCRIBE, "", 0);
-    // socket->connect("tcp://54.67.2.43:40021");
-    socket->connect("tcp://52.193.146.32:40021");
-    QMessageBox::information(this, "Connected", "Connect to 52.193.146.32:40021: Success!");
-    */
-    // this->ui->tv->show();
-
-    // emit ConnectClicked();
-    // dg->show();
-   ConnectPage* p = new ConnectPage();
-   p->show();
+   socket_recv_started = false;
+   cw->show();
 }
 
 
 void MainWindow::on_start_clicked()
 {
-    /*
-    zmq::message_t message;
-    socket->recv(&message);
-    std::string recv_str = static_cast<char*>(message.data());
-    std::vector<std::string> v = Split(recv_str, '|');
-    v.erase(v.end());
-    //QMessageBox::information(this, "MarketData", v[0].c_str());
-    for (int i = 0; i < 4; i++) {
-        reinterpret_cast<QStandardItemModel*>(ui->tv->model())->setItem(0,i,new QStandardItem(QString::fromLocal8Bit(v[i].c_str())));
+    if (!socket_connected) {
+        QMessageBox::information(this, "ERROR", "Connect server First!");
+        return;
     }
-    */
     emit StartClicked();
-    // QMessageBox::information(this, "Connected", "emit clicked");
 }
 
 
 void MainWindow::on_exit_clicked()
 {
     exit(1);
+}
+
+void MainWindow::OnDisconnectDone() {
+    socket_connected = false;
+    socket_recv_started = false;
+    emit ReStart();
+}
+
+void MainWindow::OnMimasConnectDone()
+{
+    socket_connected = true;
+}
+
+void MainWindow::OnLimitConnectDone() {
+    socket_connected = true;
+}
+
+void MainWindow::OnSelfDefineConnectDone(){
+    socket_connected = true;
+}
+
+
+void MainWindow::OnSocketRecvStarted() {
+    socket_recv_started = true;
+}
+
+void MainWindow::on_disconnect_clicked()
+{
+    emit MainWindowDisconnect();
+}
+
+void MainWindow::on_clear_clicked()
+{
+    if (socket_recv_started) {
+        QMessageBox::information(this, "ERROR", "Disconnect First!");
+        return;
+    }
+    delete market_model;
+    delete highlow_model;
+    ex_count = -1;
+    row = -1;
+    high = -1;
+    low = 10000000;
+    high_row = -1;
+    low_row = -1;
+    socket_connected = false;
+    socket_recv_started = false;
+    price_map.clear();
+    content_map.clear();
+    openMarket();
+    openHighLow();
 }

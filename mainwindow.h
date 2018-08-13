@@ -18,8 +18,8 @@
 #include <zmq.hpp>
 #include <tr1/unordered_map>
 
-#include "dialog.h"
-#include "connectpage.h"
+#include "connectwindow.h"
+#include "common_util.h"
 
 
 class MdiChild;
@@ -44,15 +44,24 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent=0);
+    MainWindow(ConnectWindow *win);
     ~MainWindow();
 
 signals:
     void StartClicked();
     void ConnectClicked();
+    void ReStart();
+    void MainWindowDisconnect();
 
 public slots:
     void marketUpdate(std::string data);
+    void OnDisconnectDone();
+    void OnMimasConnectDone();
+    void OnLimitConnectDone();
+    void OnSelfDefineConnectDone();
+    void OnSocketRecvStarted();
+
+
 
 private slots:
     void on_connect_clicked();
@@ -65,6 +74,9 @@ private slots:
     void openMarket();
     void openHighLow();
 
+    void on_disconnect_clicked();
+
+    void on_clear_clicked();
 
 private:
     void UpdateHigh(std::vector<std::string> v);
@@ -84,10 +96,14 @@ private:
     int low_row;
     QMdiSubWindow* MarketWindow;
     QMdiSubWindow* HighLowWindow;
+    QStandardItemModel* market_model;
+    QStandardItemModel* highlow_model;
     std::tr1::unordered_map<int, double> price_map;
     std::tr1::unordered_map<int, std::vector<std::string>> content_map;
     QList<std::string> black_list;
-    Dialog* dg;
+    ConnectWindow* cw;
+    bool socket_connected;
+    bool socket_recv_started;
 };
 
 #endif // MAINWINDOW_H

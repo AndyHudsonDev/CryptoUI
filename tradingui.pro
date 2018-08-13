@@ -27,14 +27,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     stream.cpp \
-    dialog.cpp \
-    connectpage.cpp
+    connectwindow.cpp \
+    common_util.cpp
 
 HEADERS += \
         mainwindow.h \
     stream.h \
-    dialog.h \
-    connectpage.h
+    connectwindow.h \
+    common_util.h
 
 FORMS += \
         mainwindow.ui

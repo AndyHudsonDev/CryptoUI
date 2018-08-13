@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="start">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>360</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
@@ -30,7 +30,7 @@
    <widget class="QPushButton" name="connect">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>160</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
@@ -67,10 +67,36 @@
     <property name="geometry">
      <rect>
       <x>540</x>
-      <y>100</y>
+      <y>81</y>
       <width>401</width>
-      <height>192</height>
+      <height>481</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="clear">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>10</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>clear</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="disconnect">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>disconnect</string>
     </property>
    </widget>
   </widget>
@@ -80,7 +106,7 @@
      <x>0</x>
      <y>0</y>
      <width>946</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHand_trading_ui">

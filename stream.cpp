@@ -4,21 +4,22 @@
 
 stream::stream(QObject *parent) : QObject(parent)
 {
-    std::vector<std::string> connect_address_v;
-    connect_address_v.push_back("tcp://54.67.2.43:40021");
-    connect_address_v.push_back("tcp://52.193.146.32:40021");
-    zmq::context_t* context = new zmq::context_t(1);
+    context = new zmq::context_t(1);
     socket = new zmq::socket_t(*context, ZMQ_SUB);
     socket->setsockopt(ZMQ_SUBSCRIBE, "", 0);
-    for (int i = 0; i < connect_address_v.size(); i++) {
-        socket->connect(connect_address_v[i].c_str());
-    }
+    t = new QTimer();
+}
+
+stream::~stream() {
+    delete context;
+    delete socket;
+    delete t;
 }
 
 void stream::Start() {
-    t = new QTimer();
     QObject::connect(t, SIGNAL(timeout()), this, SLOT(StartRecv()));
     t->start(200);
+    emit SocketRecvStarted();
 }
 
 void stream::StartRecv() {
@@ -28,3 +29,32 @@ void stream::StartRecv() {
     emit DataUpdate(recv_str);
 }
 
+void stream::OnDisconnectALLRequest() {
+    t->stop();
+    socket->close();
+    context = new zmq::context_t(1);
+    socket = new zmq::socket_t(*context, ZMQ_SUB);
+    socket->setsockopt(ZMQ_SUBSCRIBE, "", 0);
+    emit SocketDisconnectDone();
+}
+
+void stream::OnLimitConnectRequest() {
+    socket->connect("tcp://52.193.146.32:40021");
+    emit LimitConnectDone();
+}
+
+void stream::OnMimasConnectRequest() {
+    socket->connect("tcp://54.67.2.43:40021");
+    emit MimasConnectDone();
+}
+
+void stream::OnSelfDefineConnectRequest(std::string address) {
+    std::vector<std::string> address_v = Split(address, ';');
+    for (int i = 0; i < address_v.size(); i++) {
+        if (!CheckAddressLegal(address_v[i])) {
+            return;
+        }
+        socket->connect(address_v[i].c_str());
+    }
+    emit SelfDefineConnectDone();
+}
