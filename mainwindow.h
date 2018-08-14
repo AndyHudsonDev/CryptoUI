@@ -71,10 +71,6 @@ private slots:
 
     void on_exit_clicked();
 
-
-    void openMarket();
-    void openHighLow();
-
     void on_disconnect_clicked();
 
     void on_clear_clicked();
@@ -86,32 +82,33 @@ private:
     void InitVariable();
     void UpdateHigh(std::vector<std::string> v);
     void UpdateLow(std::vector<std::string> v);
-    void UpdateDelta();
-    void UpdateHighLowWindow(int line, int r);
-    void UpdateDeltaWindow();
+    void UpdateHighLowWindow(int no, int line, int r);
+    void UpdateDeltaWindow(int no);
     QStandardItemModel* InitMarketModel(QStandardItemModel* m);
+    QStandardItemModel* InitHighlowModel(QStandardItemModel* m);
     Ui::MainWindow *ui;
     zmq::socket_t* socket;
     QMdiArea *mdiArea;
     std::tr1::unordered_map<int, std::tr1::unordered_map<std::string, int>> exchange_map;
     std::tr1::unordered_map<int, int> ex_count;
-    std::tr1::unordered_map<std::string, int> row;
-    std::tr1::unordered_map<std::string, double> high;
-    std::tr1::unordered_map<std::string, double> low;
-    std::tr1::unordered_map<std::string, int> high_row;
-    std::tr1::unordered_map<std::string, int> low_row;
+    std::tr1::unordered_map<int, int> row;
+    std::tr1::unordered_map<int, double> high;
+    std::tr1::unordered_map<int, double> low;
+    std::tr1::unordered_map<int, int> high_row;
+    std::tr1::unordered_map<int, int> low_row;
     QMdiSubWindow* MarketWindow;
     QMdiSubWindow* HighLowWindow;
     QStandardItemModel* market_model[NUM_MODEL];
-    QStandardItemModel* highlow_model;
-    std::tr1::unordered_map<std::string, std::tr1::unordered_map<int, double>> price_map;
-    std::tr1::unordered_map<std::string, std::tr1::unordered_map<int, std::vector<std::string>>> content_map;
+    QStandardItemModel* highlow_model[NUM_MODEL];
+    std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> price_map;
+    std::tr1::unordered_map<int, std::tr1::unordered_map<int, std::vector<std::string>>> content_map;
     QList<std::string> black_list;
     ConnectWindow* cw;
     bool socket_connected;
     bool socket_recv_started;
     std::tr1::unordered_map<std::string, int> p_d;
     std::tr1::unordered_map<std::string, QStandardItemModel*> model_map;
+    std::tr1::unordered_map<std::string, QStandardItemModel*> highlow_map;
     std::tr1::unordered_map<int, int> pre_row;
     int model_num;
     int showmodel_no;

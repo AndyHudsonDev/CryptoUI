@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="start">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>300</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
@@ -30,7 +30,7 @@
    <widget class="QPushButton" name="connect">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>70</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
@@ -53,7 +53,7 @@
    <widget class="QPushButton" name="exit">
     <property name="geometry">
      <rect>
-      <x>540</x>
+      <x>960</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
@@ -89,7 +89,7 @@
    <widget class="QPushButton" name="disconnect">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>150</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
@@ -122,10 +122,10 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>670</x>
       <y>10</y>
-      <width>47</width>
-      <height>16</height>
+      <width>51</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
