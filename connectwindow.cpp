@@ -36,9 +36,11 @@ void ConnectWindow::OnConnect() {
         emit LimitSocketConnect();
     }
     if (qc_selfdefine->isChecked()) {
-        QString text = qte->toPlainText();
-        QMessageBox::information(this, "MarketData", text.toStdString().c_str());
-        emit SelfDefineSocketConnect(text.toStdString().c_str());
+        std::string text = qte->toPlainText().toStdString();
+        // QMessageBox::information(this, "MarketData", text.c_str());
+        std::vector<std::string> address_v = Split(text, ';');
+        QMessageBox::information(this, "MarketData", address_v[0].c_str());
+        emit SelfDefineSocketConnect(text.c_str());
     }
     this->close();
 }

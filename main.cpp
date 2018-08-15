@@ -15,12 +15,29 @@ int main(int argc, char *argv[])
     pd["BTC-USDT"] = 0;
     pd["BTC-USD"] = 0;
     pd["USDT-BTC"] = 0;
+    pd["btcusdt"] = 0;
+    pd["XXBTZUSD"] = 0;
+    pd["btc_usd"] = 0;
 
     pd["ETH-USD"] = 1;
     pd["USD-ETH"] = 1;
     pd["ETH-USDT"] = 1;
     pd["USDT-ETH"] = 1;
     pd["ETH-USDT"] = 1;
+    pd["ethusdt"] = 1;
+    pd["XETHZUSD"] = 1;
+    pd["eth_usd"] = 1;
+
+    pd["ETH-BTC"] = 2;
+    pd["BTC-ETH"] = 2;
+    pd["ETH-XBT"] = 2;
+    pd["ethbtc"] = 2;
+    pd["XETHXXBT"] = 2;
+
+    pd["XRP-BTC"] = 3;
+    pd["BTC-XRP"] = 3;
+    pd["xrpbtc"] = 3;
+    pd["XXRPXXBT"] = 3;
 
     stream s;
     ConnectWindow cw;

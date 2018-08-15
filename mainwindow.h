@@ -8,6 +8,7 @@
 #include <QSortFilterProxyModel>
 #include <QAbstractTableModel>
 #include <QMdiArea>
+#include <QMdiSubWindow>
 
 #include <QApplication>
 #include <QTableView>
@@ -75,7 +76,9 @@ private slots:
 
     void on_clear_clicked();
 
-    void on_comboBox_currentIndexChanged(const QString &arg1);
+    // void on_comboBox_currentIndexChanged(const QString &arg1);
+
+    void on_comboBox_currentIndexChanged(int index);
 
 private:
     void SetModel(QTableView*v, QStandardItemModel*m);
@@ -87,8 +90,9 @@ private:
     QStandardItemModel* InitMarketModel(QStandardItemModel* m);
     QStandardItemModel* InitHighlowModel(QStandardItemModel* m);
     Ui::MainWindow *ui;
+    QMdiArea* area;
+    QGridLayout* layout;
     zmq::socket_t* socket;
-    QMdiArea *mdiArea;
     std::tr1::unordered_map<int, std::tr1::unordered_map<std::string, int>> exchange_map;
     std::tr1::unordered_map<int, int> ex_count;
     std::tr1::unordered_map<int, int> row;
@@ -96,10 +100,13 @@ private:
     std::tr1::unordered_map<int, double> low;
     std::tr1::unordered_map<int, int> high_row;
     std::tr1::unordered_map<int, int> low_row;
-    QMdiSubWindow* MarketWindow;
-    QMdiSubWindow* HighLowWindow;
+    QMdiSubWindow* MarketWin;
+    QMdiSubWindow* HighlowWin;
+    QTableView* marketview;
+    QTableView* highlowview;
     QStandardItemModel* market_model[NUM_MODEL];
     QStandardItemModel* highlow_model[NUM_MODEL];
+    QStandardItemModel* highlow_assemble_model;
     std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> price_map;
     std::tr1::unordered_map<int, std::tr1::unordered_map<int, std::vector<std::string>>> content_map;
     QList<std::string> black_list;
@@ -107,8 +114,6 @@ private:
     bool socket_connected;
     bool socket_recv_started;
     std::tr1::unordered_map<std::string, int> p_d;
-    std::tr1::unordered_map<std::string, QStandardItemModel*> model_map;
-    std::tr1::unordered_map<std::string, QStandardItemModel*> highlow_map;
     std::tr1::unordered_map<int, int> pre_row;
     int model_num;
     int showmodel_no;

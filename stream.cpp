@@ -18,7 +18,7 @@ stream::~stream() {
 
 void stream::Start() {
     QObject::connect(t, SIGNAL(timeout()), this, SLOT(StartRecv()));
-    t->start(50);
+    t->start(20);
     emit SocketRecvStarted();
 }
 
@@ -39,7 +39,7 @@ void stream::OnDisconnectALLRequest() {
 }
 
 void stream::OnLimitConnectRequest() {
-    socket->connect("tcp://52.193.146.32:40021");
+    socket->connect("tcp://52.193.146.32:40032");
     emit LimitConnectDone();
 }
 
