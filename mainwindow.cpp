@@ -364,15 +364,17 @@ void MainWindow::UpdateDeltaWindow(int no) {
     }
     double delta_price = high_bid[no] - low_ask[no];
     char delta_price_str[16];
-    snprintf(delta_price_str, sizeof(delta_price_str), "%lf", delta_price);
+    char delta_percentage_str[16];
+    char delta_show_str[32];
+    snprintf(delta_price_str, sizeof(delta_price_str), "%.3f", delta_price);
+    snprintf(delta_percentage_str, sizeof(delta_percentage_str), "%.3f", delta_price*1.0/low_ask[no]*100);
+    snprintf(delta_show_str, sizeof(delta_show_str), "%.3f(%s%)", delta_price, delta_percentage_str);
     std::vector<std::string> high_v = content_map[no][high_bid_row[no]];
     std::vector<std::string> low_v = content_map[no][low_ask_row[no]];
     std::string hightime_str = high_v[11];
     std::string lowtime_str = low_v[11];
 
-    // int delta_time = atoi(hightime_str.c_str()) - atoi(lowtime_str.c_str());
     char delta_time_str[16];
-    // snprintf(delta_time_str, sizeof(delta_time_str), "%d", delta_time);
 
     int hightime_sec = Translate(hightime_str);
     int lowtime_sec = Translate(lowtime_str);
@@ -384,7 +386,7 @@ void MainWindow::UpdateDeltaWindow(int no) {
 
     m->setItem(show_line,0,new QStandardItem(QString::fromLocal8Bit("NULL")));
     m->setItem(show_line,1,new QStandardItem(QString::fromLocal8Bit("NULL")));
-    m->setItem(show_line,2,new QStandardItem(QString::fromLocal8Bit(delta_price_str)));
+    m->setItem(show_line,2,new QStandardItem(QString::fromLocal8Bit(delta_show_str)));
     m->setItem(show_line,3,new QStandardItem(QString::fromLocal8Bit(delta_time_str)));
 }
 
