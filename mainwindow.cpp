@@ -223,9 +223,6 @@ void MainWindow::marketUpdate(std::string data) {
         return;
     }
 
-    if (exchange == "gdax") {
-        QMessageBox::information(this, "gdax", data.c_str());
-    }
     int model_no;
     if (p_d.find(product) == p_d.end()) {
         model_no = model_num;
