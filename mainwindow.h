@@ -83,8 +83,11 @@ private slots:
 private:
     void SetModel(QTableView*v, QStandardItemModel*m);
     void InitVariable();
+    void ClearVariable();
+    /*
     void UpdateHigh(std::vector<std::string> v);
     void UpdateLow(std::vector<std::string> v);
+    */
     void UpdateHighLowWindow(int no, int line, int r);
     void UpdateDeltaWindow(int no);
     QStandardItemModel* InitMarketModel(QStandardItemModel* m);
@@ -96,10 +99,10 @@ private:
     std::tr1::unordered_map<int, std::tr1::unordered_map<std::string, int>> exchange_map;
     std::tr1::unordered_map<int, int> ex_count;
     std::tr1::unordered_map<int, int> row;
-    std::tr1::unordered_map<int, double> high;
-    std::tr1::unordered_map<int, double> low;
-    std::tr1::unordered_map<int, int> high_row;
-    std::tr1::unordered_map<int, int> low_row;
+    std::tr1::unordered_map<int, double> high_bid;
+    std::tr1::unordered_map<int, double> low_ask;
+    std::tr1::unordered_map<int, int> high_bid_row;
+    std::tr1::unordered_map<int, int> low_ask_row;
     QMdiSubWindow* MarketWin;
     QMdiSubWindow* HighlowWin;
     QTableView* marketview;
@@ -107,7 +110,10 @@ private:
     QStandardItemModel* market_model[NUM_MODEL];
     QStandardItemModel* highlow_model[NUM_MODEL];
     QStandardItemModel* highlow_assemble_model;
-    std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> price_map;
+    // std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> price_map;
+    std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> bid_map;
+    std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> ask_map;
+    std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> mid_map;
     std::tr1::unordered_map<int, std::tr1::unordered_map<int, std::vector<std::string>>> content_map;
     QList<std::string> black_list;
     ConnectWindow* cw;
@@ -117,6 +123,9 @@ private:
     std::tr1::unordered_map<int, int> pre_row;
     int model_num;
     int showmodel_no;
+    std::vector<std::string> struct_vector;
+    // std::tr1::unordered_map<int, std::string> product_ensemble;
+    std::vector<std::string>show_symbol;
 };
 
 #endif // MAINWINDOW_H

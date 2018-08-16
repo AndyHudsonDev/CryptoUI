@@ -22,3 +22,38 @@ bool CheckAddressLegal(std::string address) {
     }
     return true;
 }
+
+bool CheckTimeStringLegal(std::string time) {
+    if (time.size() < 5 || time.size() > 8) {
+        return false;
+    }
+    std::vector<std::string> time_v = Split(time, ':');
+    if (time_v.size() != 3) {
+        return false;
+    }
+    int hour = atoi(time_v[0].c_str());
+    int min = atoi(time_v[1].c_str());
+    int sec = atoi(time_v[2].c_str());
+    if (hour > 23 || hour < 0 || min > 59 || min < 0 || sec>59 || sec < 0) {
+        return false;
+    }
+    return true;
+}
+
+int Translate(std::string time) {
+    if (time.size() < 5 || time.size() > 8) {
+        return -1;
+    }
+    std::vector<std::string> time_v = Split(time, ':');
+    if (time_v.size() != 3) {
+        return -1;
+    }
+    int hour = atoi(time_v[0].c_str());
+    int min = atoi(time_v[1].c_str());
+    int sec = atoi(time_v[2].c_str());
+    if (hour > 23 || hour < 0 || min > 59 || min < 0 || sec>59 || sec < 0) {
+        return -1;
+    }
+    return hour*3600 + min*60 + sec;
+
+}
