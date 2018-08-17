@@ -84,7 +84,7 @@ MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, 
         ui->comboBox->addItem(show_symbol[i].c_str());
     }
     ui->comboBox->setCurrentIndex(showmodel_no);
-    black_list.append("okcoin");
+    // black_list.append("okcoin");
     //black_list.append("OKCOIN International");
 }
 
@@ -144,6 +144,7 @@ QStandardItemModel* MainWindow::InitHighlowModel(QStandardItemModel* m) {
         l.append("HighBid");
         l.append("LowAsk");
         l.append("Delta");
+        l.append("Delta%");
     }
     m->setVerticalHeaderLabels(l);
 
@@ -305,7 +306,7 @@ void MainWindow::marketUpdate(std::string data) {
 
 void MainWindow::UpdateHighLowWindow(int no, int line, int r) {
     std::vector<std::string> temp_v = content_map[no][r];
-    int show_line = line + 3*no;
+    int show_line = line + 4*no;
     std::string topic       = temp_v[0];
     std::string exchange    = temp_v[1];
     std::string product     = temp_v[2];
@@ -349,7 +350,7 @@ void MainWindow::UpdateHighLowWindow(int no, int line, int r) {
 }
 
 void MainWindow::UpdateDeltaWindow(int no) {
-    int show_line = no*3 + 2;
+    int show_line = no*4 + 2;
     // QStandardItemModel* m = highlow_model[no];
     QStandardItemModel* m = highlow_assemble_model;
     if (high_bid[no] < 0 || low_ask[no] > 9999999) {
@@ -357,6 +358,7 @@ void MainWindow::UpdateDeltaWindow(int no) {
         m->setItem(show_line,1,new QStandardItem(QString::fromLocal8Bit("NULL")));
         m->setItem(show_line,2,new QStandardItem(QString::fromLocal8Bit("NULL")));
         m->setItem(show_line,3,new QStandardItem(QString::fromLocal8Bit("NULL")));
+        //m->setItem(show_line,4,new QStandardItem(QString::fromLocal8Bit("NULL")));
         return;
     }
     double delta_price = high_bid[no] - low_ask[no];
@@ -383,8 +385,13 @@ void MainWindow::UpdateDeltaWindow(int no) {
 
     m->setItem(show_line,0,new QStandardItem(QString::fromLocal8Bit("NULL")));
     m->setItem(show_line,1,new QStandardItem(QString::fromLocal8Bit("NULL")));
-    m->setItem(show_line,2,new QStandardItem(QString::fromLocal8Bit(delta_show_str)));
+    m->setItem(show_line,2,new QStandardItem(QString::fromLocal8Bit(delta_price_str)));
     m->setItem(show_line,3,new QStandardItem(QString::fromLocal8Bit(delta_time_str)));
+
+    m->setItem(show_line+1,0,new QStandardItem(QString::fromLocal8Bit("NULL")));
+    m->setItem(show_line+1,1,new QStandardItem(QString::fromLocal8Bit("NULL")));
+    m->setItem(show_line+1,2,new QStandardItem(QString::fromLocal8Bit(delta_percentage_str)));
+    m->setItem(show_line+1,3,new QStandardItem(QString::fromLocal8Bit("NULL")));
 }
 
 MainWindow::~MainWindow()
