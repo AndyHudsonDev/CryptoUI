@@ -3,12 +3,13 @@
 #include <unistd.h>
 #include <QTimer>
 
-MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, int> pd) :
+MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, int> pd, std::vector<std::string>product_v) :
     ui(new Ui::MainWindow),
     cw(win),
     socket_connected(false),
     socket_recv_started(false),
     p_d(pd),
+    show_symbol(product_v),
     model_num(0),
     showmodel_no(0)
 {
@@ -68,7 +69,10 @@ MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, 
     MarketWin->resize(width*m_rate, height);
     HighlowWin->resize(width*(1-m_rate), height);
 
+    show_symbol.push_back("Other");
+
     // QMessageBox::information(this, "MarketData", "asdasdsad");
+    /*
     for (int i = 0; i < model_num+1; i++) {
         show_symbol.push_back("Uninit");
     }
@@ -78,7 +82,9 @@ MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, 
     show_symbol[1] = "ETHUSD";
     show_symbol[2] = "ETHBTC";
     show_symbol[3] = "XRPBTC";
-    show_symbol[4] = "other";
+    show_symbol[4] = "LTCUSD";
+    show_symbol[5] = "other";
+    */
 
     for (int i = 0; i < show_symbol.size(); i++) {
         ui->comboBox->addItem(show_symbol[i].c_str());
@@ -140,7 +146,7 @@ QStandardItemModel* MainWindow::InitHighlowModel(QStandardItemModel* m) {
     m->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("Price"));
     m->setHeaderData(3,Qt::Horizontal,QString::fromLocal8Bit("Time"));
     QStringList l;
-    for (int i = 0; i < model_num; i++) {
+    for (int i = 0; i < model_num+1; i++) {
         l.append("HighBid");
         l.append("LowAsk");
         l.append("Delta");
@@ -209,13 +215,6 @@ void MainWindow::marketUpdate(std::string data) {
         numeric_ask1         = atof(v[5].c_str());
         numeric_asize1       = atof(v[6].c_str());
         numeric_lastprice    = atof(v[7].c_str());
-        /*
-        numeric_volume       = atof(v[8].c_str());
-        numeric_turnover     = atof(v[9].c_str());
-        numeric_openinterest = atof(v[10].c_str());
-        numeric_time         = atof(v[11].c_str());
-        numeric_nsec         = atof(v[12].c_str());
-        */
         numeric_mid = 0.5*numeric_ask1 + 0.5*numeric_bid1;
 
     } else {

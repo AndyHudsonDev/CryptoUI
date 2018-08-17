@@ -46,7 +46,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(ConnectWindow *win, std::tr1::unordered_map<std::string, int>pd);
+    MainWindow(ConnectWindow *win, std::tr1::unordered_map<std::string, int>pd, std::vector<std::string> product_v);
     ~MainWindow();
 
 signals:

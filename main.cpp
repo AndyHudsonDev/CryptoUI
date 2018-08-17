@@ -11,6 +11,26 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     std::tr1::unordered_map<std::string, int> pd;
+    std::vector<std::string> product_v;
+    product_v.push_back("BTC-USD");
+    product_v.push_back("ETH-USD");
+    product_v.push_back("ETH-BTC");
+    product_v.push_back("XRP-BTC");
+    product_v.push_back("LTC-USD");
+    product_v.push_back("LTC-BTC");
+    product_v.push_back("XRP-USD");
+
+    for (int i = 0; i < product_v.size(); i++) {
+        Register(&pd, product_v[i].c_str(), i);
+    }
+    pd["XXBTZUSD"] = 0;
+    /*
+    Register(&pd, "BTC-USD", 0);
+    Register(&pd, "ETH-USD", 1);
+    Register(&pd, "ETH-BTC", 2);
+    Register(&pd, "XRP-BTC", 3);
+    */
+    /*
     pd["XBT-USD"] = 0;
     pd["BTC-USDT"] = 0;
     pd["BTC-USD"] = 0;
@@ -18,6 +38,7 @@ int main(int argc, char *argv[])
     pd["btcusdt"] = 0;
     pd["XXBTZUSD"] = 0;
     pd["btc_usd"] = 0;
+    pd["btc_usdt"] = 0;
     pd["BTCUSDT"] = 0;
 
     pd["ETH-USD"] = 1;
@@ -28,24 +49,49 @@ int main(int argc, char *argv[])
     pd["ethusdt"] = 1;
     pd["XETHZUSD"] = 1;
     pd["eth_usd"] = 1;
+    pd["eth_usdt"] = 1;
     pd["ETHUSDT"] = 1;
 
     pd["ETH-BTC"] = 2;
     pd["BTC-ETH"] = 2;
     pd["ETH-XBT"] = 2;
     pd["ethbtc"] = 2;
+    pd["eth_btc"] = 2;
     pd["XETHXXBT"] = 2;
     pd["ETHBTC"] = 2;
 
     pd["XRP-BTC"] = 3;
     pd["BTC-XRP"] = 3;
     pd["xrpbtc"] = 3;
+    pd["xrp_btc"] = 3;
     pd["XXRPXXBT"] = 3;
     pd["XRPBTC"] = 3;
 
+    pd["LTC-USD"]  = 4;
+    pd["LTC-USDT"] = 4;
+    pd["LTC-USD"]  = 4;
+    pd["USDT-LTC"] = 4;
+    pd["ltcusdt"]  = 4;
+    pd["XLTCZUSD"] = 4;
+    pd["ltc_usd"]  = 4;
+    pd["ltc_usdt"] = 4;
+    pd["LTCUSDT"]  = 4;
+
+    pd["LTC-USD"]  = 4;
+    pd["LTC-USDT"] = 4;
+    pd["LTC-USD"]  = 4;
+    pd["USDT-LTC"] = 4;
+    pd["ltcusdt"]  = 4;
+    pd["XLTCZUSD"] = 4;
+    pd["ltc_usd"]  = 4;
+    pd["ltc_usdt"] = 4;
+    pd["LTCUSDT"]  = 4;
+    */
+
+
     stream s;
     ConnectWindow cw;
-    MainWindow w(&cw, pd);
+    MainWindow w(&cw, pd, product_v);
 
     QObject::connect(&cw, SIGNAL(DisconnectAll()), &s, SLOT(OnDisconnectALLRequest()));
     QObject::connect(&cw, SIGNAL(MimasSocketConnect()), &s, SLOT(OnMimasConnectRequest()));
