@@ -7,6 +7,10 @@ stream::stream(QObject *parent) : QObject(parent)
     context = new zmq::context_t(1);
     socket = new zmq::socket_t(*context, ZMQ_SUB);
     socket->setsockopt(ZMQ_SUBSCRIBE, "", 0);
+    uint64_t hwm = 0;
+    socket->setsockopt(ZMQ_HWM, &hwm, sizeof(hwm));
+    uint64_t buf_size = 1000000000;
+    socket->setsockopt(ZMQ_RCVBUF, &buf_size, sizeof(buf_size));
     t = new QTimer();
 }
 
@@ -18,7 +22,7 @@ stream::~stream() {
 
 void stream::Start() {
     QObject::connect(t, SIGNAL(timeout()), this, SLOT(StartRecv()));
-    t->start(20);
+    t->start(0);
     emit SocketRecvStarted();
 }
 
