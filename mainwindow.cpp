@@ -161,12 +161,12 @@ void MainWindow::marketUpdate(std::string data) {
     //QMessageBox::information(this, "MarketData", data.c_str());
     std::vector<std::string> v = Split(data, '|');
     if (v.empty()) {
-        QMessageBox::information(this, "vector size zero", "empty");
+        // QMessageBox::information(this, "vector size zero", "empty");
         return;
     }
     v.erase(v.end());
     if (v.size() < struct_vector.size()) {
-        QMessageBox::information(this, "Split size wrong", data.c_str());
+        // QMessageBox::information(this, "Split size wrong", data.c_str());
         return;
     }
     std::string topic;
@@ -219,7 +219,7 @@ void MainWindow::marketUpdate(std::string data) {
         numeric_mid = 0.5*numeric_ask1 + 0.5*numeric_bid1;
 
     } else {
-        QMessageBox::information(this, "Unknown topic", data.c_str());
+        // QMessageBox::information(this, "Unknown topic", data.c_str());
         return;
     }
 
@@ -242,7 +242,7 @@ void MainWindow::marketUpdate(std::string data) {
     }
 
     if (numeric_bid1 < 0.000001 ||  numeric_ask1 < 0.000001 || numeric_lastprice < 0.000001) {
-        QMessageBox::information(this, "Price format Error", data.c_str());
+        // QMessageBox::information(this, "Price format Error", data.c_str());
         return;
     }
 
@@ -334,7 +334,7 @@ void MainWindow::UpdateHighLowWindow(int no, int line, int r) {
     } else if (line == 1) {
         show_price = ask1;
     } else {
-        QMessageBox::information(this, "Wrong line", exchange.c_str());
+        // QMessageBox::information(this, "Wrong line", exchange.c_str());
         return;
     }
 
@@ -391,6 +391,10 @@ void MainWindow::UpdateDeltaWindow(int no) {
     m->setItem(show_line+1,1,new QStandardItem(QString::fromLocal8Bit("NULL")));
     m->setItem(show_line+1,2,new QStandardItem(QString::fromLocal8Bit(delta_percentage_str)));
     m->setItem(show_line+1,3,new QStandardItem(QString::fromLocal8Bit("NULL")));
+    for (int i = 0; i < m->columnCount(); i++) {
+        m->item(show_line+1,i)->setForeground(QBrush(QColor(255, 0, 0)));
+    }
+
 }
 
 MainWindow::~MainWindow()

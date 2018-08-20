@@ -5,6 +5,9 @@
 #include <QObject>
 #include <tr1/unordered_map>
 #include "common_util.h"
+//#include <libconfig.h++>
+
+//using namespace libconfig;
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +22,34 @@ int main(int argc, char *argv[])
     product_v.push_back("LTC-USD");
     product_v.push_back("LTC-BTC");
     product_v.push_back("XRP-USD");
+
+    // ¡¢xlmbtc¡¢£¨vetbtc£©¡¢adabtc¡¢iotabtc¡¢zecbtc¡¢qtumbtc¡¢dashbtc¡¢omgbtc¡¢£¨veteth£©
+    product_v.push_back("ETC-USD");
+    product_v.push_back("ETC-BTC");
+    product_v.push_back("ETC-ETH");
+    product_v.push_back("EOS-USD");
+    product_v.push_back("EOS-BTC");
+
+    product_v.push_back("BCH-USD");
+    product_v.push_back("BCH-BTC");
+
+    product_v.push_back("TRX-USD");
+    product_v.push_back("TRX-BTC");
+    product_v.push_back("TRX-ETH");
+
+    product_v.push_back("NEO-BTC");
+    product_v.push_back("NEO-USD");
+
+    product_v.push_back("XLM-BTC");
+    product_v.push_back("ADA-BTC");
+    product_v.push_back("IOTA-BTC");
+    product_v.push_back("ZEC-BTC");
+    product_v.push_back("QTUM-BTC");
+    product_v.push_back("DASH-BTC");
+    product_v.push_back("OMG-BTC");
+
+
+
 
     for (int i = 0; i < product_v.size(); i++) {
         Register(&pd, product_v[i].c_str(), i);

@@ -40,4 +40,7 @@ FORMS += \
         mainwindow.ui
 
 LIBS += -L $$PWD/zmq/lib -lzmq
+#LIBS += -L $$PWD/zmq/lib -lconfig
+
 INCLUDEPATH += $$PWD/zmq/include
+#INCLUDEPATH += $$PWD/libconfig/include
