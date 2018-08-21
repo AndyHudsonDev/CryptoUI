@@ -56,6 +56,9 @@ int main(int argc, char *argv[])
     pd["XXBTZUSD"] = 0;
     pd["XXRPXXBT"] = 3;
     pd["XLTCXXBT"] = 5;
+    pd["XLTCZUSD"] = 4;
+    pd["XETHZUSD"] = 1;
+    pd["XETHXXBT"] = 2;
     pd["XETCXXBT"] = 8;
     pd["XETCZUSD"] = 7;
     pd["XETCXETH"] = 9;
