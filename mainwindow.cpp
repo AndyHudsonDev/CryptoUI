@@ -338,7 +338,7 @@ void MainWindow::UpdateDelta(int row) {
     snprintf(delta_str, sizeof(delta_str), "%lf", high_bid - low_ask);
     // double delta_percent = delta*1.0/low_ask;
     char delta_percent_str[16];
-    snprintf(delta_percent_str, sizeof(delta_percent_str), "%lf", (high_bid-low_ask)/low_ask);
+    snprintf(delta_percent_str, sizeof(delta_percent_str), "%lf", (high_bid-low_ask)*100.0/low_ask);
     int high_time_int = Translate(high_time_str);
     int low_time_int = Translate(low_time_str);
     char time_diff[16];

@@ -23,7 +23,6 @@ int main(int argc, char *argv[])
     product_v.push_back("LTC-BTC");
     product_v.push_back("XRP-USD");
 
-    // ¡¢xlmbtc¡¢£¨vetbtc£©¡¢adabtc¡¢iotabtc¡¢zecbtc¡¢qtumbtc¡¢dashbtc¡¢omgbtc¡¢£¨veteth£©
     product_v.push_back("ETC-USD");
     product_v.push_back("ETC-BTC");
     product_v.push_back("ETC-ETH");
@@ -55,6 +54,12 @@ int main(int argc, char *argv[])
         Register(&pd, product_v[i].c_str(), i);
     }
     pd["XXBTZUSD"] = 0;
+    pd["XXRPXXBT"] = 3;
+    pd["XLTCXXBT"] = 5;
+    pd["XETCXXBT"] = 8;
+    pd["XETCZUSD"] = 7;
+    pd["XETCXETH"] = 9;
+    pd["ETH_ETC"] = 9;
     /*
     Register(&pd, "BTC-USD", 0);
     Register(&pd, "ETH-USD", 1);
