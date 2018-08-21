@@ -28,6 +28,7 @@ MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, 
     struct_vector.push_back("time");
     struct_vector.push_back("nsec");
     struct_vector.push_back("source");
+    show_symbol.push_back("Other");
     ui->setupUi(this);
     ui->area->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -65,26 +66,11 @@ MainWindow::MainWindow(ConnectWindow* win, std::tr1::unordered_map<std::string, 
     QSize area_size = ui->area->size();
     int height = area_size.rheight();
     int width = area_size.rwidth();
-    double m_rate = 3.0/5;
-    MarketWin->resize(width*m_rate, height);
-    HighlowWin->resize(width*(1-m_rate), height);
-
-    show_symbol.push_back("Other");
-
-    // QMessageBox::information(this, "MarketData", "asdasdsad");
-    /*
-    for (int i = 0; i < model_num+1; i++) {
-        show_symbol.push_back("Uninit");
-    }
+    double m_rate = 2.0/5;
+    MarketWin->resize(width, m_rate*height);
+    HighlowWin->resize(width, (1-m_rate)*height);
 
 
-    show_symbol[0] = "BTCUSD";
-    show_symbol[1] = "ETHUSD";
-    show_symbol[2] = "ETHBTC";
-    show_symbol[3] = "XRPBTC";
-    show_symbol[4] = "LTCUSD";
-    show_symbol[5] = "other";
-    */
 
     for (int i = 0; i < show_symbol.size(); i++) {
         ui->comboBox->addItem(show_symbol[i].c_str());
@@ -138,24 +124,35 @@ QStandardItemModel* MainWindow::InitMarketModel(QStandardItemModel* m) {
 }
 
 QStandardItemModel* MainWindow::InitHighlowModel(QStandardItemModel* m) {
-    m = new QStandardItemModel();
-    m->setColumnCount(4);
+    std::vector<std::string> column_title;
+    column_title.push_back("Product");
+    column_title.push_back("Delta%");
+    column_title.push_back("Highest_bid");
+    column_title.push_back("High_ex");
+    column_title.push_back("Lowest_ask");
+    column_title.push_back("Low_ex");
+    column_title.push_back("Delta");
+    column_title.push_back("Time_diff");
+    column_title.push_back("Time_high");
+    column_title.push_back("Time_low");
 
-    m->setHeaderData(0,Qt::Horizontal,QString::fromLocal8Bit("Product"));
-    m->setHeaderData(1,Qt::Horizontal,QString::fromLocal8Bit("Exchange"));
-    m->setHeaderData(2,Qt::Horizontal,QString::fromLocal8Bit("Price"));
-    m->setHeaderData(3,Qt::Horizontal,QString::fromLocal8Bit("Time"));
-    QStringList l;
-    for (int i = 0; i < model_num+1; i++) {
-        l.append("HighBid");
-        l.append("LowAsk");
-        l.append("Delta");
-        l.append("Delta%");
+    m = new QStandardItemModel();
+    m->setColumnCount(column_title.size());
+
+    for (int i = 0; i < column_title.size(); i++) {
+        m->setHeaderData(i,Qt::Horizontal,QString::fromLocal8Bit(column_title[i].c_str()));
     }
-    m->setVerticalHeaderLabels(l);
+
+    for (int i = 0; i < show_symbol.size(); i++) {
+        for (int j = 0; j < column_title.size(); j++) {
+            m->setItem(i, j, new QStandardItem(QString::fromLocal8Bit("NULL")));
+        }
+        m->setItem(i, 0, new QStandardItem(QString::fromLocal8Bit(show_symbol[i].c_str())));
+    }
 
     return m;
 }
+
 
 void MainWindow::marketUpdate(std::string data) {
     //QMessageBox::information(this, "MarketData", data.c_str());
@@ -274,7 +271,8 @@ void MainWindow::marketUpdate(std::string data) {
             }
         }
         high_bid[model_no] = max_price;
-        UpdateHighLowWindow(model_no, 0, max_row);
+        // UpdateHighLowWindow(model_no, 0, max_row);
+        UpdateHighLow(model_no, "high");
     }
     if (row[model_no] == low_ask_row[model_no]) {
         int min_row = -1;
@@ -286,20 +284,69 @@ void MainWindow::marketUpdate(std::string data) {
             }
         }
         low_ask[model_no] = min_price;
-        UpdateHighLowWindow(model_no, 1, min_row);
+        // UpdateHighLowWindow(model_no, 1, min_row);
+        UpdateHighLow(model_no, "low");
     }
     if (row[model_no] != low_ask_row[model_no] && row[model_no] != high_bid_row[model_no]) {
         if (numeric_bid1 > high_bid[model_no]) {
             high_bid[model_no] = numeric_bid1;
             high_bid_row[model_no] = row[model_no];
-            UpdateHighLowWindow(model_no, 0, row[model_no]);
+            // UpdateHighLowWindow(model_no, 0, row[model_no]);
+            UpdateHighLow(model_no, "high");
         }
         if (numeric_ask1 < low_ask[model_no]) {
             low_ask[model_no] = numeric_ask1;
             low_ask_row[model_no] = row[model_no];
-            UpdateHighLowWindow(model_no, 1, row[model_no]);
+            // UpdateHighLowWindow(model_no, 1, row[model_no]);
+            UpdateHighLow(model_no, "low");
         }
     }
+}
+
+void MainWindow::UpdateHighLow(int row, std::string topic) {
+    QStandardItemModel* m = highlow_assemble_model;
+    if (topic == "high") {
+        std::vector<std::string> high_v = content_map[row][high_bid_row[row]];
+        m->setItem(row, 2, new QStandardItem(QString::fromLocal8Bit(high_v[3].c_str())));
+        m->setItem(row, 3, new QStandardItem(QString::fromLocal8Bit(high_v[1].c_str())));
+        m->setItem(row, 8, new QStandardItem(QString::fromLocal8Bit(high_v[11].c_str())));
+    } else if (topic == "low") {
+        std::vector<std::string> low_v = content_map[row][low_ask_row[row]];
+        m->setItem(row, 4, new QStandardItem(QString::fromLocal8Bit(low_v[5].c_str())));
+        m->setItem(row, 5, new QStandardItem(QString::fromLocal8Bit(low_v[1].c_str())));
+        m->setItem(row, 9, new QStandardItem(QString::fromLocal8Bit(low_v[11].c_str())));
+    } else {
+        QMessageBox::information(this, "Wrong topic for high low", topic.c_str());
+        exit(1);
+    }
+    UpdateDelta(row);
+}
+
+void MainWindow::UpdateDelta(int row) {
+    QStandardItemModel* m = highlow_assemble_model;
+    std::string high_bid_str = m->item(row,2)->text().toStdString();
+    // QMessageBox::information(this, "highbid str", high_bid_str.c_str());
+    std::string low_ask_str = m->item(row,4)->text().toStdString();
+    std::string high_time_str = m->item(row,8)->text().toStdString();
+    std::string low_time_str = m->item(row,9)->text().toStdString();
+    if (high_bid_str == "NULL" || low_ask_str == "NULL" || high_time_str == "NULL" || low_time_str == "NULL") {
+        return;
+    }
+    double high_bid = atof(high_bid_str.c_str());
+    double low_ask = atof(low_ask_str.c_str());
+    char delta_str[16];
+    snprintf(delta_str, sizeof(delta_str), "%lf", high_bid - low_ask);
+    // double delta_percent = delta*1.0/low_ask;
+    char delta_percent_str[16];
+    snprintf(delta_percent_str, sizeof(delta_percent_str), "%lf", (high_bid-low_ask)/low_ask);
+    int high_time_int = Translate(high_time_str);
+    int low_time_int = Translate(low_time_str);
+    char time_diff[16];
+    snprintf(time_diff, sizeof(time_diff), "%d", high_time_int-low_time_int);
+
+    m->setItem(row, 1, new QStandardItem(QString::fromLocal8Bit(delta_percent_str)));
+    m->setItem(row, 6, new QStandardItem(QString::fromLocal8Bit(delta_str)));
+    m->setItem(row, 7, new QStandardItem(QString::fromLocal8Bit(time_diff)));
 }
 
 

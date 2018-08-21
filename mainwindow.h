@@ -89,7 +89,9 @@ private:
     void UpdateLow(std::vector<std::string> v);
     */
     void UpdateHighLowWindow(int no, int line, int r);
+    void UpdateHighLow(int row, std::string topic);
     void UpdateDeltaWindow(int no);
+    void UpdateDelta(int row);
     QStandardItemModel* InitMarketModel(QStandardItemModel* m);
     QStandardItemModel* InitHighlowModel(QStandardItemModel* m);
     Ui::MainWindow *ui;
