@@ -88,9 +88,9 @@ private:
     void UpdateHigh(std::vector<std::string> v);
     void UpdateLow(std::vector<std::string> v);
     */
-    void UpdateHighLowWindow(int no, int line, int r);
+    // void UpdateHighLowWindow(int no, int line, int r);
     void UpdateHighLow(int row, std::string topic);
-    void UpdateDeltaWindow(int no);
+    // void UpdateDeltaWindow(int no);
     void UpdateDelta(int row);
     QStandardItemModel* InitMarketModel(QStandardItemModel* m);
     QStandardItemModel* InitHighlowModel(QStandardItemModel* m);
@@ -116,7 +116,8 @@ private:
     std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> bid_map;
     std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> ask_map;
     std::tr1::unordered_map<int, std::tr1::unordered_map<int, double>> mid_map;
-    std::tr1::unordered_map<int, std::tr1::unordered_map<int, std::vector<std::string>>> content_map;
+    // std::tr1::unordered_map<int, std::tr1::unordered_map<int, std::vector<std::string>>> content_map;
+    std::tr1::unordered_map<int, std::tr1::unordered_map<int, MarketSnapshot> > content_map;
     QList<std::string> black_list;
     ConnectWindow* cw;
     bool socket_connected;

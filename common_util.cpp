@@ -1,18 +1,49 @@
 #include "common_util.h"
 
+std::string ExtractString(std::string s, char rm_char) {
+  if (s.empty()) {
+    return s;
+  }
+  int first_content_pos = -1;
+  int last_content_pos = -1;
+  for (unsigned int i = 0; i < s.size(); i++) {
+    if (s[i] != rm_char) {
+      first_content_pos = i;
+      break;
+    }
+  }
+  if (first_content_pos == -1) {
+    return "";
+  }
+  for (unsigned int i = s.size()-1; i >= 0; i--) {
+    if (s[i] != rm_char) {
+      last_content_pos = i;
+      break;
+    }
+  }
+  // printf("first last is %d %d\n", first_content_pos, last_content_pos);
+  return s.substr(first_content_pos, last_content_pos-first_content_pos+1);
+}
 
 std::vector<std::string> Split(std::string raw_string, char split_char) {
     std::vector<std::string> result;
     int pos = -1;
     for (unsigned int i = 0; i < raw_string.size(); i++) {
       if (raw_string[i] == split_char) {
-        result.push_back(raw_string.substr(pos+1, i-pos-1));
+        std::string substr = ExtractString(raw_string.substr(pos+1, i-pos-1));
+        if (!substr.empty()) {
+          result.push_back(substr);
+        }
         pos = i;
       }
     }
-    result.push_back(raw_string.substr(pos+1, raw_string.size()-pos));
+    std::string left_str = ExtractString(raw_string.substr(pos+1, raw_string.size()-pos));
+    if (!left_str.empty()) {
+      result.push_back(left_str);
+    }
     return result;
 }
+
 
 void Register(std::tr1::unordered_map<std::string, int>* m, std::string contract, int no) {
   std::vector<std::string> connect_v;
@@ -122,4 +153,77 @@ int Translate(std::string time) {
     }
     return hour*3600 + min*60 + sec;
 
+}
+
+MarketSnapshot HandleSnapshot(std::string raw_shot) {
+  MarketSnapshot shot;
+  std::vector<std::string> content = Split(raw_shot, '|');
+  if (!CheckVSize(content, 12)) {
+    return shot;
+  }
+
+  std::vector<std::string> time_content = Split(content[0], ' ');
+  if (!CheckVSize(time_content, 4)) {
+    return shot;
+  }
+  std::string unix_sec = time_content[0];
+  std::string unix_usec = time_content[1];
+  std::string topic = time_content[2];
+  std::string ticker = time_content[3];
+
+  // printf("unix_sec=%s, unix_usec=%s, topic=%s, ticker=%s\n", unix_sec.c_str(), unix_usec.c_str(), topic.c_str(), ticker.c_str());
+
+  std::vector<std::string> bidask_price[5];
+  std::vector<std::string> bidask_size[5];
+  std::string bid_price[5];
+  std::string ask_price[5];
+  std::string bid_size[5];
+  std::string ask_size[5];
+  for (int i = 0; i < 5; i++) {
+    bidask_price[i] = Split(content[1+2*i]);
+    if (!CheckVSize(bidask_price[i], 2)) {
+      return shot;
+    }
+    bid_price[i] = bidask_price[i][0];
+    ask_price[i] = bidask_price[i][1];
+    bidask_size[i] = Split(content[2+2*i]);
+    if (!CheckVSize(bidask_size[i], 3)) {
+      return shot;
+    }
+    bid_size[i] = bidask_size[i][0];
+    ask_size[i] = bidask_size[i][2];
+    // printf("bid[%d]=%s, bid_size[%d]=%s, ask[%d]=%s, ask_size[%d]=%s\n", i, bid_price[i].c_str(), i, bid_size[i].c_str(), i, ask_price[i].c_str(), i, ask_size[i].c_str());
+  }
+
+  std::vector<std::string> other_content = Split(content[11]);
+  if (!CheckVSize(other_content, 6)) {
+    return shot;
+  }
+  std::string last_price = other_content[0];
+  std::string last_size = other_content[1];
+  std::string volume = other_content[2];
+  std::string trade_topic = other_content[3];
+  std::string turnover = other_content[4];
+  std::string open_interest = other_content[5];
+
+  // printf("lastprice=%s, lastsize=%s, volume=%s, trade_topic=%s, turnover=%s, open_interest=%s\n", last_price.c_str(), last_size.c_str(), volume.c_str(), trade_topic.c_str(), turnover.c_str(), open_interest.c_str());
+
+  shot.time.tv_sec = atoi(unix_sec.c_str());
+  shot.time.tv_usec = atoi(unix_usec.c_str());
+
+  snprintf(shot.ticker, sizeof(shot.ticker), "%s", ticker.c_str());
+
+  for (int i = 0; i < 5; i++) {
+      shot.bids[i] = atof(bid_price[i].c_str());
+      shot.bid_sizes[i] = atof(bid_size[i].c_str());
+      shot.asks[i] = atof(ask_price[i].c_str());
+      shot.ask_sizes[i] = atof(ask_size[i].c_str());
+    }
+
+    shot.last_trade = atof(last_price.c_str());
+    shot.last_trade_size = atof(last_size.c_str());
+    shot.volume = atof(volume.c_str());
+    shot.turnover = atof(turnover.c_str());
+    shot.open_interest = atof(open_interest.c_str());
+    return shot;
 }

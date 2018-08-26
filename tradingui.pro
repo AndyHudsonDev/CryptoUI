@@ -34,7 +34,8 @@ HEADERS += \
         mainwindow.h \
     stream.h \
     connectwindow.h \
-    common_util.h
+    common_util.h \
+    market_snapshot.h
 
 FORMS += \
         mainwindow.ui

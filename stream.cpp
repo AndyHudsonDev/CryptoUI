@@ -48,7 +48,7 @@ void stream::OnLimitConnectRequest() {
 }
 
 void stream::OnMimasConnectRequest() {
-    socket->connect("tcp://54.67.2.43:40021");
+    socket->connect("tcp://54.67.2.43:40044");
     emit MimasConnectDone();
 }
 
