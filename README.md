@@ -1,6 +1,5 @@
-# TradingUI
+# CryptoUI
 
-# cryptobackend
 
 brief introduction:
 This is the UI code for cryptocurrency market_data, included exchanges: huobi, okex, binance, polenix, kakren.
