@@ -33,6 +33,6 @@ your contribution.
 ### Thanks list:
 
 
-Market_data format:
+### Market_data format:
 any data in the following format are supported by this UI.
 "Topic|Exchange|product|bid1|bsize1|ask1|asize1|lastprice|volume|turnover|openinterest|time|nsec|source|end"
