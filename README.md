@@ -11,7 +11,7 @@ when highest_bid > lowest_ask, there is a no-risk oppounity(logically): buy in l
 * windows
 
 it need a backend program, code is here https://github.com/nickhuangxinyu/cryptobackend/edit/master/README.md
-you can just use mine(i have a server running the backend)
+you can just use mine(i have a server running on the backend, it's a us server, so the ui maybe slow to update due to the bad network)
 
 ### run command:
 unzip the demo.rar,  double click trading-ui.exe, you will see the ui
