@@ -8,7 +8,7 @@ when highest_bid > lowest_ask, there is a no-risk oppounity(logically): buy in l
 
 
 ### system:
-windows
+* windows
 it need a backend program, code is here https://github.com/nickhuangxinyu/cryptobackend/edit/master/README.md
 you can just use mine(i have a server running the backend)
 
