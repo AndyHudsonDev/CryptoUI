@@ -2,7 +2,7 @@
 
 
 ### brief introduction:
-This is the UI code for cryptocurrency market_data, included exchanges: huobi, okex, binance, polenix, kakren.
+This is the UI code for cryptocurrency market_data, included exchanges: huobi, okex, binance, polenix, kraken.
 it can be used to do simple arbtriage between several exchanges.
 when highest_bid > lowest_ask, there is a no-risk oppounity(logically): buy in lowest_ask and sell in highest_bid.
 
